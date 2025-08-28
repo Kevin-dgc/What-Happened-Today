@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Guess What Happened</h1>
+
+    <form method="POST" action="{{ url_for('quiz') }}">
+        <input type="hidden" name='correct_answer' value="{{ question['correct_answer'] }}">
+
+        <fieldset>
+            <legend>{{ question['question_text'] }}</legend>
+            {% for option in question['options'] %}
+                <label>
+                    <input type="radio" name="answer" value="{{ option }}">
+                    {{ option }}
+                </label><br>
+            {% endfor %}
+        </fieldset>
+        <button type="button" onclick="onSubmitClick()">Submit</button>
+        <script>
+            function onSubmitClick() {
+                fetch('/on_submit', {method: 'POST'})
+                .then(() => {
+                    document.forms[0].submit();
+                });
+            }
+        </script>
+    </form>
+{% endblock %}
