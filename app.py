@@ -10,6 +10,9 @@ from db import get_fact, save_fact, init_db
 app = Flask(__name__)
 init_db()
 
+@app.route("/api")
+def api():
+    return "Hello, Vercel!"
 
 @app.route('/on_submit', methods=['POST'])
 def on_submit():
