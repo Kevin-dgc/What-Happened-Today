@@ -176,7 +176,7 @@ def quiz():
     
     
     choices, correct = getFacts()
-    date = str(getDate()[0]) + "/" + str(getDate()[1])
+    date = str(getDate()[1]) + "/" + str(getDate()[0])
     question_text = "What happened on " + date + ""
     options = [pair[0] for pair in choices]
     

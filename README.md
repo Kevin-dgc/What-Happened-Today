@@ -7,24 +7,28 @@ python3 app.py
 ```
 
 ```
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate.fish
 pip install flask
 pip install bs4
 pip install requests
+pip install gunicorn 
+```
 
 ```
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate.zsh
 pip install flask
 pip install bs4
 pip install requests
+pip install gunicorn 
 ```
 
 ```
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 pip install flask
 pip install bs4
 pip install requests
+pip install gunicorn 
 ```
