@@ -10,6 +10,8 @@ from db import get_fact, save_fact, init_db
 app = Flask(__name__)
 init_db()
 
+currentDate = date.today().day, date.today().month
+
 @app.route("/api")
 def api():
     return "Hello, Vercel!"
@@ -21,29 +23,51 @@ def on_submit():
 
 # get 4 facts
 def getFacts():
-    # facts = [
-    #     ("Paris", "Capital of France"),
-    #     ("Berlin", "Capital of Germany"),
-    #     ("London", "Capital of UK"),
-    #     ("Madrid", "Capital of Spain"),
-    # ]
-    
-    correct = GetRandomFact(GetInfoFromDay(getDate()))
+    correct = getFactFromToday()
     choices = []
     
     choices.append(correct)
     
     # 3 random facts from random days that arent cur day
-    choices.append(GetRandomFact(GetInfoFromDay(GetRandomDay(getDate()))))
-    choices.append(GetRandomFact(GetInfoFromDay(GetRandomDay(getDate()))))
-    choices.append(GetRandomFact(GetInfoFromDay(GetRandomDay(getDate()))))
+    choices.append(getFactNotFromToday())
+    choices.append(getFactNotFromToday())
+    choices.append(getFactNotFromToday())
 
     random.shuffle(choices)
     return choices, correct
 
-def getDate():    
-    return date.today().day, date.today().month
+# Added wrapper functions for alot of things for the webpage
 
+@app.route("/getFactFromToday", methods=['POST'])
+def getFactFromToday():
+    return GetRandomFact(GetInfoFromDay(getDate()))
+
+@app.route("/getFactNotFromToday", methods=['POST'])
+def getFactNotFromToday():
+    return GetRandomFact(GetInfoFromDay(GetRandomDay(getDate())))
+
+@app.route("/checkAnswer", methods=['POST'])
+def checkAnswer():
+    userAnswer = request.form.get("answer")
+    correctAnswer = request.form.get("correct_answer")
+    return userAnswer == correctAnswer
+
+@app.route("/getDate", methods=['POST'])
+def getDate():
+    global currentDate
+    return currentDate
+
+@app.route("/change_date", methods=['POST'])
+def changeDate():
+    global currentDate
+    day = int(request.form.get("days", currentDate[0]))
+    month = int(request.form.get("months", currentDate[1]))
+    # defaults day and month to currentDate
+    currentDate = day, month
+    print(currentDate)
+    return '', 204
+    
+# end of wrapper functions
 
 def GetRandomDay(cur):
     # retuns a day != cur
@@ -157,10 +181,7 @@ def GetRandomFact(input):
     day = input[1]
     
     if not facts:
-        # Return a default value or an error message if no facts are found
         return "No facts found for this date.", day
-    # returns one item from list of pairs
-    # the returned thing is <fact,date>
     return random.choice(facts), day
   
 # Show one question at a time using getFacts
@@ -170,13 +191,8 @@ def quiz():
     if request.method == "POST":
         user = request.form.get("answer")
         correct = request.form.get("correct_answer")
-        result= user == correct
-        
-        # print("User:", repr(user))
-        # print("Correct:", repr(correct))
-        # print("Equal?", user == correct)
+        result = user == correct
         print(result)
-    
     
     choices, correct = getFacts()
     date = str(getDate()[1]) + "/" + str(getDate()[0])
