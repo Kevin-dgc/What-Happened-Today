@@ -9,8 +9,20 @@ body {
     /* margin-top: 20px */
 }
 
-.date_change{
+.date_change {
     display: flex;
     justify-content: center;
+}
+
+.game_grid {
+
+}
+
+.fact_box {
+
+}
+
+.quiz_box {
+    
 }
 

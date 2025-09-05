@@ -8,7 +8,7 @@
 
 
     <!-- Chaning Date Area Below -->
-    <form class="date_change" action="{{ url_for('changeDate') }}" method="post">
+    <form class="date_change" action="{{ url_for('changeDate') }}" method="POST">
         <label for="months"></label>
         <select name="months" id="months">
             <option value="1">January</option>
@@ -32,6 +32,18 @@
     </form>
     <!-- Chaning Date Area Above -->
 
+    <form class="quiz_box" action="{{ url for('quiz') }}" method="GET">
+        <div class="game_grid">
+            <div class="fact_box" fact_id="0"></div>
+            <input type="hidden" name="fact_id" value="0">
+            <div class="fact_box" fact_id="1"></div>
+            <div class="fact_box" fact_id="2"></div>
+            <div class="fact_box" fact_id="3"></div>
+        </div>
+
+        <div id="msg"></div>
+        <button type="submit" id="submit_button">Submit</button>
+    </form>
 
     
 
@@ -69,6 +81,15 @@
                 daysSelect.appendChild(option);
             }
         }
+
+        // handles prompting user for questions
+        const factBoxs = document.querySelectorAll('.fact_box')
+        
+
+
+        // end of it
+        
+
 
 
         document.getElementById('months').addEventListener('change', updateDays);
