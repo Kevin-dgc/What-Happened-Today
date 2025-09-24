@@ -11,7 +11,7 @@ app = Flask(__name__)
 init_db()
 
 currentDate = date.today().day, date.today().month
-currentAnswer = ""
+correctAnswer = ""
 
 @app.route("/api")
 def api():
@@ -186,22 +186,33 @@ def GetRandomFact(input):
     return random.choice(facts), day
   
 # Show one question at a time using getFacts
-@app.route("/quiz", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def quiz():
-    global currentAnswer
-    if request.method == "POST":
-        userAnswer = request.form.get("answer")
-        result = userAnswer == currentAnswer
-        print(result)
-        return result
-    else:
-        choices, correct = getFacts()
-        options = [pair[0] for pair in choices]
-        
-        currentAnswer = correct
-        
-        return options
+    global correctAnswer
     
+    if request.method == "POST":
+        user = request.form.get("option")
+        result = user == correctAnswer
+        return render_template("quiz.html",
+                               result,
+                               optionsDate
+                               )
+    
+    
+    choices, correctAnswerPair = getFacts()
+    correctAnswer = correctAnswerPair[0]
+    # each ch
+    options = [pair[0] for pair in choices]
+    optionsDate = [pair[0] for pair in choices]
+    
+    return render_template(
+        "quiz.html",
+        question={
+            'options': options,
+            'options_dates': optionsDate,
+            'correct_answer': correctAnswer
+        },
+    )
 
 if __name__ == "__main__":
     # starts website
@@ -214,3 +225,4 @@ if __name__ == "__main__":
     #         day_tuple = (d, m)
     #         GetInfoFromDay(day_tuple)
     #         print(str(m) + "/" + str(d))
+
