@@ -35,7 +35,8 @@ def getFacts():
     choices.append(getFactNotFromToday())
 
     random.shuffle(choices)
-    return choices, correct
+    session['correct_answer'] = correct
+    return choices
 
 # Added wrapper functions for alot of things for the webpage
 
@@ -50,7 +51,7 @@ def getFactNotFromToday():
 @app.route("/checkAnswer", methods=['POST'])
 def checkAnswer():
     userAnswer = request.form.get("answer")
-    correctAnswer = request.form.get("correct_answer")
+    correctAnswer = session['correct_answer']
     return userAnswer == correctAnswer
 
 @app.route("/getDate", methods=['POST'])

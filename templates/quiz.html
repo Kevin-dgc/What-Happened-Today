@@ -32,25 +32,27 @@
     </form>
     <!-- Chaning Date Area Above -->
 
-  
-    
-    <form class="quiz_box" action="{{ url_for('quiz') }}" method="POST">
-        <div class="game_grid">
-            <input type="radio" id="choice_one" name="option">
-            <label for="choice_one">{{question.options[0]}}</label>
-
-            <input type="radio" id="choice_two" name="option">
-            <label for="choice_two">{{question.options[1]}}</label>
-
-            <input type="radio" id="choice_three" name="option">
-            <label for="choice_three">{{question.options[2]}}</label>
-
-            <input type="radio" id="choice_four" name="option">
-            <label for="choice_four">{{question.options[3]}}</label>
+    <div class="big_box">
+        <div class="box_option" onclick="selectOption(0)">
+                <div class="text_option">1969 Neil Armstrong walks on moon</div>
+                <div class="date_optiion">July 20</div>
         </div>
 
-        <button type="submit" class="submit_buttion">Submit</button>
-    </form>
+        <div class="box_option" onclick="selectOption(1)">
+                <div class="text_option">1969 Neil Armstrong walks on moon</div>
+                <div class="date_optiion">July 20</div>
+        </div>
+
+        <div class="box_option" onclick="selectOption(2)">
+                <div class="text_option">1969 Neil Armstrong walks on moon</div>
+                <div class="date_optiion">July 20</div>
+        </div>
+
+        <div class="box_option" onclick="selectOption(3)">
+                <div class="text_option">1969 Neil Armstrong walks on moon</div>
+                <div class="date_optiion">July 20</div>
+        </div>
+    </div>
 
 
 
@@ -59,6 +61,12 @@
 
     <!-- Scripts -->
     <script>
+
+        function selectOption(num){
+            
+        }
+
+
         const daysInMonth = {
             1: 31,
             2: 28,

@@ -14,10 +14,14 @@ body {
     justify-content: center;
 }
 
-.game_grid {
+.box_option {
 
 }
 
-.submit_buttion {
-    
+.text_option {
+
+}
+
+.date_option {
+    display: none;
 }
