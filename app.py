@@ -4,10 +4,15 @@ from datetime import date
 import random
 import requests
 
+import os
+from dotenv import load_dotenv
+
 # my files
 from db import get_fact, save_fact, init_db
 
 app = Flask(__name__)
+load_dotenv()
+app.secret_key = os.environ.get('SECRET_KEY')
 init_db()
 
 currentDate = date.today().day, date.today().month
@@ -22,7 +27,6 @@ def on_submit():
     getFacts()
     return '', 204
 
-# get 4 facts
 def getFacts():
     correct = getFactFromToday()
     choices = []
@@ -35,26 +39,46 @@ def getFacts():
     choices.append(getFactNotFromToday())
 
     random.shuffle(choices)
-    session['correct_answer'] = correct
+    
+    # finds right index after shuffle
+    correct_index = next(i for i, choice in enumerate(choices) if choice[0] == correct[0])
+    session['correct_answer_index'] = correct_index
+    
     return choices
 
-# Added wrapper functions for alot of things for the webpage
-
 @app.route("/getFactFromToday", methods=['POST'])
-def getFactFromToday():
+def getFactFromTodayRoute():
     return GetRandomFact(GetInfoFromDay(getDate()))
 
+def getFactFromToday():
+    result = GetRandomFact(GetInfoFromDay(getDate()))
+    while not result or not result[0] or result[0].startswith("No facts"):
+        print(f"Invalid fact for today, retrying...")
+        result = GetRandomFact(GetInfoFromDay(GetRandomDay(getDate())))
+    return result
+
 @app.route("/getFactNotFromToday", methods=['POST'])
-def getFactNotFromToday():
+def getFactNotFromTodayRoute():
     return GetRandomFact(GetInfoFromDay(GetRandomDay(getDate())))
+
+def getFactNotFromToday():
+    result = GetRandomFact(GetInfoFromDay(GetRandomDay(getDate())))
+    while not result or not result[0] or result[0].startswith("No facts"):
+        print(f"Invalid fact, retrying...")
+        result = GetRandomFact(GetInfoFromDay(GetRandomDay(getDate())))
+    return result
 
 @app.route("/checkAnswer", methods=['POST'])
 def checkAnswer():
     userAnswer = request.form.get("answer")
-    correctAnswer = session['correct_answer']
-    return userAnswer == correctAnswer
+    correctAnswer = session.get('correct_answer')
+    return str(userAnswer == correctAnswer)
 
 @app.route("/getDate", methods=['POST'])
+def getDateRoute():
+    global currentDate
+    return str(currentDate)
+
 def getDate():
     global currentDate
     return currentDate
@@ -182,48 +206,38 @@ def GetRandomFact(input):
     facts = input[0]
     day = input[1]
     
-    if not facts:
-        return "No facts found for this date.", day
+    if not facts or len(facts) == 0:
+        # if today is bad ten pick another random day
+        print(f"No facts found for {day[0]}/{day[1]}, trying different day...")
+        return GetRandomFact(GetInfoFromDay(GetRandomDay(day)))
     return random.choice(facts), day
   
 # Show one question at a time using getFacts
 @app.route("/", methods=["GET", "POST"])
 def quiz():
-    global correctAnswer
+    global currentDate
     
-    if request.method == "POST":
-        user = request.form.get("option")
-        result = user == correctAnswer
-        return render_template("quiz.html",
-                               result,
-                               optionsDate
-                               )
+    months = ["", "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"]
     
-    
-    choices, correctAnswerPair = getFacts()
-    correctAnswer = correctAnswerPair[0]
-    # each ch
+    # GET request - new question
+    choices = getFacts()
     options = [pair[0] for pair in choices]
-    optionsDate = [pair[0] for pair in choices]
+    options_dates = [f"{months[pair[1][1]]} {pair[1][0]}" for pair in choices]
+    
+    current_date_str = f"{months[currentDate[1]]} {currentDate[0]}"
+    correct_answer_index = session.get('correct_answer_index')
     
     return render_template(
         "quiz.html",
-        question={
-            'options': options,
-            'options_dates': optionsDate,
-            'correct_answer': correctAnswer
-        },
+        options=options,
+        options_dates=options_dates,
+        correct_answer_index=correct_answer_index,
+        current_date=current_date_str,
+        current_month=currentDate[1],
+        current_day=currentDate[0]
     )
 
 if __name__ == "__main__":
     # starts website
-    app.run(host='0.0.0.0')
-    #GetInfoFromDay(getDate())
-    
-    #loads all days
-    # for m in range(1,13):
-    #     for d in range(1,32):
-    #         day_tuple = (d, m)
-    #         GetInfoFromDay(day_tuple)
-    #         print(str(m) + "/" + str(d))
-
+    app.run(host='0.0.0.0', debug=False)
