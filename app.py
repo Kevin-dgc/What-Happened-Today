@@ -196,7 +196,6 @@ def GetInfoFromDay(day):
                 txt = ' '.join(formatted)
                 info.append(txt)
                 #print(txt)
-            
     # stores info
     info_str = "\n".join(info)
     save_fact(day_str, info_str)
